@@ -1,5 +1,5 @@
 <div>
-    <h2>{{ $titulo }}</h2>
+    <h2>{{ $titulo }}</h2>    
 
     <div class="mt-3"> 
 
@@ -18,7 +18,7 @@
 
         {{-- wire:model Para cambia el valor de la propiedad "categoria" --}}
         <textarea
-        wire:model="mensaje"
+        wire:model.live="mensaje"
         type="text"
         class="form-control"
         placeholder="Ingresar mensaje...">

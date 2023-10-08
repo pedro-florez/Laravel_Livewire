@@ -19,20 +19,23 @@
             <td>
                 <div class="btn-space">
                     <a
+                    wire:navigate
                     href="{{ route('producto.show', $producto) }}"
                     class="btn btn-success"
                     title="Ver detalle">
                         <i class="fas fa-eye"></i>
                     </a>
 
-                    <a href="{{ route('producto.editar', $producto) }}"
+                    <a
+                    wire:navigate 
+                    href="{{ route('producto.editar', $producto) }}"
                     class="btn btn-primary"
                     title="Editar">
                         <i class="fas fa-edit"></i>
                     </a>
 
                     <button
-                    wire:click="$emit( 'confirmarEliminarProducto', {{ $producto->id }} )"
+                    wire:click="$dispatch('confirmarEliminarProducto', {{ $producto->id }} )"
                     class="btn btn-danger"
                     title="Eliminar">
                         <i class="fas fa-trash-alt"></i>

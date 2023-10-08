@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Livewire\Inicio;
-use App\Http\Livewire\ProductoIndex;
-use App\Http\Livewire\ProductoForm;
-use App\Http\Livewire\ProductoShow;
+use App\Livewire\Inicio;
+use App\Livewire\ProductoIndex;
+use App\Livewire\ProductoForm;
+use App\Livewire\ProductoShow;
 
 /*
 * Web Routes
@@ -18,4 +18,4 @@ Route::get('/producto/crear', ProductoForm::class)->name('producto.crear');
 
 Route::get('/producto/{producto}', ProductoShow::class)->name('producto.show');
 
-Route::get('/producto/{producto}/editar', ProductoForm::class)->name('producto.editar');
+Route::get('/producto/editar/{producto}', ProductoForm::class)->name('producto.editar');

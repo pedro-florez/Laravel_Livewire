@@ -7,7 +7,7 @@
         </label>
 
         <select
-        wire:model="numPorPagina"
+        wire:model.live="numPorPagina"
         class="form-select">
             
             @foreach ( $numerosDePaginas as $numero )
@@ -35,7 +35,7 @@
         </label>
 
         <input
-        wire:model="buscar"
+        wire:model.live="buscar"
         type="text"
         class="form-control"
         placeholder="Filtrar producto">

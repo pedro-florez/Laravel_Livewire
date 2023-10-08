@@ -29,7 +29,7 @@ class Producto extends Model {
     protected $guarded = [];
 
     /**
-     ** Mostrar la Propiedad Slug en la Url por el ID
+     ** Mostrar la Propiedad token en la Url por el ID
      */
     public function getRouteKeyName() {
         return 'token';
@@ -59,11 +59,16 @@ class Producto extends Model {
      */
     public function imagenURL() {
 
-        $url = substr( $this->imagen, 0, 5);
+        if ( !empty($this->imagen) ) {
+            
+            $url = substr( $this->imagen, 0, 5);
+    
+            return $url != 'https'
+                   ? asset('storage/'.$this->imagen)
+                   : $this->imagen;
+        }
 
-        return $url != 'https'
-               ? asset('storage/'.$this->imagen)
-               : $this->imagen;
+        return $this->imagen;
     }
 
     /**

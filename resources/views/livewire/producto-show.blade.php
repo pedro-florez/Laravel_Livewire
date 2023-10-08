@@ -1,21 +1,21 @@
 <div>
-    
-    <h2> {{ $producto->nombre }} </h2>
+
+    <h2> {{ $producto->nombre ?? '' }} </h2>
 
     <p> {{ $producto->descripcion }} </p>
 
     <div>
-        <img 
+        <img
         src="{{ $producto->imagenURL() }}"
         class="img-thumbnail mb-2"
-        alt="{{ $producto->nombre }}"
-        width="400">        
-    </div>
+        alt="{{ $producto->nombre ?? '' }}"
+        width="400">
+    </div>    
 
     <div>
-        <b>Categoria:</b> {{ $producto->categoria->nombre }}
+        <b>Categoria:</b> {{ $producto->categoria->nombre ?? 'No tiene categoria' }}
     </div>
-    
+
     <small class="text-body-secondary">
         Creado el {{ $producto->created_at->format('d-m-Y') }}
     </small>

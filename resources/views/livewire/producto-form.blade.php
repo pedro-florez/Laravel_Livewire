@@ -7,9 +7,7 @@
         * Evitar que se recargue la pantalla .prevent
         * Enviar el formulario al metodo "save" creado en la class ProductoForm
     --}}
-    <form wire:submit.prevent="save">
-
-        @csrf
+    <form wire:submit.prevent="save">        
 
         <div class="mb-3">
 
@@ -18,7 +16,7 @@
             </label>
 
             <input
-            wire:model="producto.nombre"
+            wire:model.live.debounce.500ms="producto.nombre"
             id="inputNombre"
             type="text"
             class="form-control @error('producto.nombre') is-invalid @enderror"
@@ -37,7 +35,7 @@
             </label>
 
             <input
-            wire:model="producto.slug"
+            wire:model.live="producto.slug"
             id="inputSlug"
             type="text"
             class="form-control @error('producto.slug') is-invalid @enderror"
@@ -47,42 +45,43 @@
                 <div class="form-text text-danger"> {{ $message }} </div>
             @enderror
 
-        </div>       
+        </div>
 
         <div class="mb-3">
 
-            <label            
+            <label
             class="form-label">
                 Categoria
             </label>
 
-            <div class="input-group">
+            <div class="input-group">                
 
                 <select
-                wire:model="producto.categoria_id"
+                wire:model.live="producto.categoria_id"
                 class="form-select @error('producto.categoria_id') is-invalid @enderror">
 
                     <option selected>-Seleccionar-</option>
 
-                    {{-- 
-                        El Foreach es diferente por que se esta utilizando el metodo pluck()
-                    --}}
+                    {{-- Mostar Categorias --}}
                     @foreach ( $categorias as $id => $nombre )
 
-                        <option value="{{ $id }}">
+                        <option 
+                        value="{{ $id }}"
+                        {{ $id == $producto->categoria_id ? 'selected' : '' }}>
                             {{ $nombre }}
                         </option>
-                        
+
                     @endforeach
 
                 </select>
 
                 {{-- Boton Modal Agregar Categoria --}}
-                <button
-                wire:click="showModalAddCategoria"
+                <button                
                 title="Agregar Categoria"
                 type="button"
-                class="btn btn-secondary">
+                class="btn btn-secondary"
+                data-bs-toggle="modal" 
+                data-bs-target="#modalAddCategoria">
                     <i class="fas fa-plus fa-sm"></i>
                 </button>
 
@@ -102,7 +101,7 @@
                 Descripción
             </label>
             <textarea
-            wire:model="producto.descripcion"
+            wire:model.live="producto.descripcion"
             id="textAreaDecripcion"
             class="form-control @error('producto.descripcion') is-invalid @enderror"
             rows="4"
@@ -118,10 +117,10 @@
 
             <label for="inputImagen" class="form-label">
                 {{ $producto->imagen ? 'Cambiar' : 'Subir' }}  imagen
-            </label>            
+            </label>
 
             <input
-            wire:model="imagen"
+            wire:model.live="imagen"
             id="inputImagen"
             type="file"
             class="form-control @error('imagen') is-invalid @enderror">
@@ -132,13 +131,13 @@
 
             <div
             wire:loading.class="spinner-border text-primary"
-            wire:target="imagen">            
+            wire:target="imagen">
             </div>
 
             @if ( $imagen )
 
                 {{-- Setear campos $set('imagen', null) --}}
-                <button 
+                <button
                 wire:click="$set('imagen', null)"
                 class="btn btn-danger">Quitar imagen</button>
 
@@ -171,10 +170,10 @@
         wire:loading.class="spinner-border text-primary"
         wire:target="save">
         </div>
-
+        
     </form>
 
     {{-- Modal Agregar Categoria --}}
-    @include('shared.modal')    
+    @include('shared.modal')
 
 </div>

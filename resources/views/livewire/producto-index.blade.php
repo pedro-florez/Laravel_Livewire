@@ -2,7 +2,7 @@
 
     <h2 class="mb-3">{{ $titulo }}</h2>    
     
-    @include('shared.buttonsHeader')    
+    @include('shared.buttonsHeader')
 
     @if( $mostrarProductos && $productos )
 
@@ -16,15 +16,13 @@
 
             @include('shared.thead')
 
-            @include('shared.tbody')            
+            @include('shared.tbody')
 
         </table>
 
         {{-- Mostar Paginador --}}
-        {{ $productos->links('shared.pagination') }}
+        {{ $productos->links('shared.pagination') }}        
 
-        @include('shared.eventDeleteJS')
-
-    @endif    
+    @endif
 
 </div>

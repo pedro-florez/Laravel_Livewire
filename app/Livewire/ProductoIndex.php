@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Producto;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,36 +18,30 @@ class ProductoIndex extends Component {
     /**
      ** Las propiedades Publicas pueden ser accedidas desde la vista
      */
-    public $titulo = 'Gestor de Productos';    
+    public $titulo = 'Gestor de Productos';
 
     public $mostrarProductos = true;
 
     public $buscar = '';
 
     /**
-     ** Numero de Registros por pagina 
+     ** Numero de Registros por pagina
      */
     public $numPorPagina = 10;
     public $numerosDePaginas = [10,25,50,100];
 
     /**
-     ** Propiedades Custom para Ordenar por campos en la tabla 
+     ** Propiedades Custom para Ordenar por campos en la tabla
      */
     public $sortField = 'created_at';
-    public $sortDirection = 'desc';
+    public $sortDirection = 'desc';    
 
     /**
-     ** Propiedad Livewire Para Escuchar Eventos desdee la vista blade 
-     ** ['nombre_del_evento']
-     */
-    protected $listeners = ['eliminarProducto'];
-
-    /**
-    ** Metodo Para Escuchar el Evento desde la vista blade
-    ** Tiene que llamarse igual al que esta en el propiedad $listeners
+    ** Escuchar Eventos desde la Plantilla Blade u Otro Componente
     */
+    #[On('eliminarProducto')]
     public function eliminarProducto( $producto_id ) {
-        
+
         $producto = Producto::find( $producto_id );
 
         //* Validar si es un producto
@@ -59,31 +54,37 @@ class ProductoIndex extends Component {
             $producto->delete();
 
             /**
-             ** Activar Evento Alert Exito
+             ** Enviar Evento Alert Exito
             */
-            $this->dispatchBrowserEvent( 'sweetalertProducto', [
-                'title' => '¡Buen Trabajo!',
-                'text' => 'Producto eliminado con éxito.',
-                'icon' => 'success'
-            ]);            
+            $this->dispatch(
+                'sweetalertProducto',
+                payload : [
+                    'title' => '¡Buen Trabajo!',
+                    'text' => 'Producto eliminado con éxito.',
+                    'icon' => 'success'
+                ]
+            );
 
         }else {
 
             /**
-             ** Activar Evento Alert Error
+             ** Enviar Evento Alert Error
             */
-            $this->dispatchBrowserEvent( 'sweetalertProducto', [
-                'title' => 'Opsss',
-                'text' => 'Error al eliminar el producto.',
-                'icon' => 'error'
-            ]);            
-        }        
+            $this->dispatch(
+                'sweetalertProducto',
+                payload : [
+                    'title' => 'Opsss',
+                    'text' => 'Error al eliminar el producto.',
+                    'icon' => 'error'
+                ]
+            );
+        }
     }
-   
+
     /**
      ** Opcion #1 Para Obtener Datos desde la DB
      ** public $productos;
-     * 
+     *
      ** El metodo mount() sirve como constructor de la clase
      ** public function mount() {
 
@@ -91,11 +92,11 @@ class ProductoIndex extends Component {
      **     $this->productos = Producto::all();
      ** }
     */
-    
+
     /**
      ** Resetear la pagina para realizar una busqueda
-     ** Metodo updatingNombreDeLaPropiedad() 
-    */    
+     ** Metodo updatingNombreDeLaPropiedad()
+    */
     public function updatingBuscar() {
 
         $this->resetPage();
@@ -111,12 +112,12 @@ class ProductoIndex extends Component {
         //* Validar el Tipo de Ordenamiento
         $this->sortField === $campo
             ? $this->sortDirection = ($this->sortDirection === 'asc') ? 'desc' : 'asc'
-            : $this->sortDirection = 'asc';       
+            : $this->sortDirection = 'asc';
     }
 
     /**
      ** Mostrar u Ocultar Tabla de productos
-    */    
+    */
     public function showTabla() {
 
         $accion = $this->mostrarProductos ? false : true;
@@ -125,7 +126,7 @@ class ProductoIndex extends Component {
     }
 
     /**
-     ** Renderizar el componente 
+     ** Renderizar el componente
      */
     public function render() {
 
@@ -137,7 +138,7 @@ class ProductoIndex extends Component {
             'like',
             "%{$this->buscar}%"
         )
-        ->orderBy( $this->sortField,  $this->sortDirection )        
+        ->orderBy( $this->sortField,  $this->sortDirection )
         ->paginate( $this->numPorPagina );
 
         return view('livewire.producto-index', [

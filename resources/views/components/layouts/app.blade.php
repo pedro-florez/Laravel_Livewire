@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">    
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">  
+    {{-- CSRF Token --}}
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Laravel Livewire</title>    
 
@@ -50,14 +52,14 @@
             opacity: 0.3;
         }
 
-    </style>
+    </style>    
 
     @livewireStyles
 
 </head>
 <body>
 
-    @include('layouts.header')
+    @include('components.layouts.header')
 
     {{-- @php($productos = \App\Models\Producto::all()) --}}
 
@@ -92,12 +94,17 @@
         {{-- Renderizar los componentes Dinamicamente --}}
         {{ $slot }}
 
-    </div>
+    </div>    
 
-    @livewireScripts    
+    @livewireScripts
+
+    {{-- Incluir archivos js personalizados (No se esta utilizando) --}}
+    @stack('js')
 
     {{-- Incluir archivos js personalizados --}}
-    @stack('js')
+    <script 
+    data-navigate-once 
+    src="{{ asset('assets/js/producto.js') }}"></script>
 
 </body>
 </html>

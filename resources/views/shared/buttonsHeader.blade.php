@@ -1,6 +1,7 @@
 <div class="d-flex justify-content-between">
 
     <a
+    wire:navigate
     href="{{ route('producto.crear') }}"
     class="btn btn-primary">
         Agregar Producto

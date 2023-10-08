@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Categoria;
 use App\Models\Producto;
@@ -10,6 +10,7 @@ use Livewire\WithFileUploads;
 
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\On;
 
 class ProductoForm extends Component {
 
@@ -25,26 +26,25 @@ class ProductoForm extends Component {
     public Producto $producto;
 
     /**
-     ** Para obtener la Data de la imagen sebe 
+     ** Para obtener la Data de la imagen sebe
      ** trabajar la propiedad por fuera del modelo
      */
     public $imagen;
 
-    /**
-     * Modelo Categoria
-     */
-    public $newCategoria;
-    
+    //** Propidad Para el modal agregar categoria
+    public $nombreCategoria = '';
+    public $isNombreCategoriaRequired = false;
+
     public $btnSubmit = false;
 
     /**
      ** En este cado de Utilizar Modelo Se debe Instanciar para poder crear producto
      */
-    public function mount( Producto $producto ) {        
+    public function mount( Producto $producto ) {
 
         #$this->producto = new Producto;
         $this->producto = $producto;
-    }    
+    }
 
     /**
      ** Forma recomendada por Livewire de definir las Validaciones
@@ -89,17 +89,16 @@ class ProductoForm extends Component {
                 'max:250'
             ],
             'imagen' => [
-                Rule::requiredIf( !$this->producto->imagen ),
+                'nullable',
                 Rule::when( $this->imagen, [
-                    'image', 
+                    'image',
                     'max:2000'
-                ])               
+                ])
             ],
-            
+
             //* Reglas para crear nueva Categoria desde el modal
-            'newCategoria.nombre' => [
-                //* Es requido si es una instancia del Modelo Categoria
-                Rule::requiredIf( $this->newCategoria instanceof Categoria ),
+            'nombreCategoria' => [
+                Rule::requiredIf( $this->isNombreCategoriaRequired ),
                 'regex:/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\\. ]+$/i',
                 'unique:categorias,nombre',
                 'max:100'
@@ -130,18 +129,11 @@ class ProductoForm extends Component {
     }
 
     /**
-     ** Metodo Custom Para Inicializar la Nueva Categoria
-     ** y Disparar Evento a Recibir en la vista del Modal
+     ** Escuchar Evento desde el archivo Producto.js
      */
-    public function showModalAddCategoria() {
-
-        $this->newCategoria = new Categoria;
-
-        /**
-         ** Activar Evento en Livewire dispatchBrowserEvent(name_evento)
-         ** Ejemplo Abrir modal desde script JS
-         */
-        $this->dispatchBrowserEvent('showModalCategoria');
+    #[On('requiredNombreCategoria')]
+    public function requiredNombreCategoria() {
+        $this->isNombreCategoriaRequired = true;
     }
 
     /**
@@ -150,22 +142,21 @@ class ProductoForm extends Component {
     public function closeModalAddCategoria() {
 
         /**
-         ** Vaciar la Instancia de la categoria
-         ** Para que no moleste al crear el producto
-         ** Ya que al tener la instacia despues de creada la categoria
-         ** Permanece la instancia
+         ** Ejecutar Funcion desde archivo JS
          */
-        $this->newCategoria = NULL;
+        $this->js('cerrarModalAddCategoria()');
 
         /**
-         ** Activar Evento Cerrar Modal
+         ** Vaciar el campo nombre categoria
          */
-        $this->dispatchBrowserEvent('closeModalCategoria');
+        $this->nombreCategoria = '';
 
         /**
          ** Limpiar los erros de Validacion al Cerrar Modal
          */
-        $this->clearValidation('newCategoria.*');
+        $this->clearValidation('nombreCategoria');
+
+        $this->isNombreCategoriaRequired = false;
     }
 
     /**
@@ -174,18 +165,18 @@ class ProductoForm extends Component {
     public function saveCategoria() {
 
         /**
-         ** Obtener la Validacion solo del Nombre de la Categoria 
+         ** Obtener la Validacion solo del Nombre de la Categoria
          ** Agregada en las rules
          */
-        $this->validateOnly('newCategoria.nombre');
+        $this->validateOnly('nombreCategoria');
 
-        //dump( $validatedData );
-
-        //* Guardar
-        $this->newCategoria->save();
+        //* Setear y Guardar Categoria
+        $categoria = new Categoria;
+        $categoria->nombre = trim($this->nombreCategoria);
+        $categoria->save();
 
         //* Agregar el Id en el select de categorias
-        $this->producto->categoria_id = $this->newCategoria->id;
+        $this->producto->categoria_id = $categoria->id;
 
         /**
          ** Cerrar Modal
@@ -197,11 +188,11 @@ class ProductoForm extends Component {
      ** Guardar Producto
      */
     public function save() {
-
+        
         /**
          ** Validar Formularios
         */
-        #$data = $this->validate();
+        //$data = $this->validate();
         $this->validate();
 
         /**
@@ -271,7 +262,7 @@ class ProductoForm extends Component {
 
         /**
          ** Metodo pluck()
-         ** Permite Obtener campos especificos de la tabla 
+         ** Permite Obtener campos especificos de la tabla
          */
         return view('livewire.producto-form', [
             'categorias' => Categoria::pluck('nombre', 'id')
